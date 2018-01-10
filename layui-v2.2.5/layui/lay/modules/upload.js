@@ -89,6 +89,14 @@ layui.define("layer", function(e) {
 		var n, o = this,
 			l = o.config,
 			r = o.elemFile[0],
+			da = function(r){
+				if(typeof l.datadeal == 'function'){
+					var re = l.datadeal(r);
+					return re||r;  
+				}else{
+					return r;
+				}				
+			},
 			u = function() {
 				var t = 0,
 					n = 0,
@@ -104,7 +112,7 @@ layui.define("layer", function(e) {
 					var r = new FormData;
 					layui.each(l.data, function(e, i) {
 						r.append(e, i)
-					}), r.append(l.field, a), i.ajax({
+					}), r.append(l.field, a),r=da(r), i.ajax({
 						url: l.url,
 						type: l.method,
 						data: r,
