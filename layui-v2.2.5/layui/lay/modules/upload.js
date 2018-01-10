@@ -171,6 +171,7 @@ layui.define("layer", function(e) {
 				}
 			},
 			y = function() {
+                l.selectedfile && l.selectedfile(o.chooseFiles);
 				return "choose" === t ? l.choose && l.choose(g) : (l.before && l.before(g), a.ie ? a.ie > 9 ? u() : c() : void u())
 			};
 		if(v = 0 === v.length ? r.value.match(/[^\/\\]+\..+/g) || [] || "" : v, 0 !== v.length) {
