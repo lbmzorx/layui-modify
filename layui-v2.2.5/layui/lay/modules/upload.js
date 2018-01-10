@@ -74,7 +74,9 @@ layui.define("layer", function(e) {
 		})
 	}, p.prototype.isFile = function() {
 		var e = this.config.elem[0];
-		if(e) return "input" === e.tagName.toLocaleLowerCase() && "file" === e.type
+		if(e) {
+			return "input" === e.tagName.toLocaleLowerCase() && "file" === e.type
+		}
 	}, p.prototype.preview = function(e) {
 		var i = this;
 		window.FileReader && layui.each(i.chooseFiles, function(i, t) {
@@ -100,20 +102,20 @@ layui.define("layer", function(e) {
 					};
 				layui.each(a, function(e, a) {
 					var r = new FormData;
-					r.append(l.field, a), layui.each(l.data, function(e, i) {
+					layui.each(l.data, function(e, i) {
 						r.append(e, i)
-					}), i.ajax({
+					}), r.append(l.field, a), i.ajax({
 						url: l.url,
 						type: l.method,
 						data: r,
 						contentType: !1,
 						processData: !1,
 						dataType: "json",
-						success: function(i) {
-							t++, d(e, i), u()
+						success: function(i, co) {
+							t += 1, d(e, i, co), u()
 						},
-						error: function() {
-							n++, o.msg("请求上传接口出现异常"), m(e), u()
+						error: function(i, co) {
+							n += 1, o.msg("请求上传接口出现异常"), m(e, i, co), u()
 						}
 					})
 				})
@@ -130,20 +132,22 @@ layui.define("layer", function(e) {
 					i && (clearInterval(p.timer), t.html(""), d(0, i))
 				}, 30)
 			},
-			d = function(e, i) {
-				if(o.elemFile.next("." + s).remove(), r.value = "", "object" != typeof i) try {
-					i = JSON.parse(i)
-				} catch(t) {
-					return i = {}, o.msg("请对上传接口返回有效JSON")
+			d = function(e, i, co) {
+				if(o.elemFile.next("." + s).remove(), r.value = "", "object" != typeof i) {
+					try {
+						i = JSON.parse(i)
+					} catch(t) {
+						return i = {}, o.msg("请对上传接口返回有效JSON")
+					}
 				}
 				"function" == typeof l.done && l.done(i, e || 0, function(e) {
 					o.upload(e)
-				})
+				}, co || 0)
 			},
-			m = function(e) {
+			m = function(e, i, co) {
 				l.auto && (r.value = ""), "function" == typeof l.error && l.error(e || 0, function(e) {
 					o.upload(e)
-				})
+				}, i || 0, co || 0)
 			},
 			h = l.exts,
 			v = function() {
@@ -172,26 +176,36 @@ layui.define("layer", function(e) {
 		if(v = 0 === v.length ? r.value.match(/[^\/\\]+\..+/g) || [] || "" : v, 0 !== v.length) {
 			switch(l.accept) {
 				case "file":
-					if(h && !RegExp("\\w\\.(" + h + ")$", "i").test(escape(v))) return o.msg("选择的文件中包含不支持的格式"), r.value = "";
+					if(h && !RegExp("\\w\\.(" + h + ")$", "i").test(escape(v))) {
+						return o.msg("选择的文件中包含不支持的格式"), r.value = ""
+					}
 					break;
 				case "video":
-					if(!RegExp("\\w\\.(" + (h || "avi|mp4|wma|rmvb|rm|flash|3gp|flv") + ")$", "i").test(escape(v))) return o.msg("选择的视频中包含不支持的格式"), r.value = "";
+					if(!RegExp("\\w\\.(" + (h || "avi|mp4|wma|rmvb|rm|flash|3gp|flv") + ")$", "i").test(escape(v))) {
+						return o.msg("选择的视频中包含不支持的格式"), r.value = ""
+					}
 					break;
 				case "audio":
-					if(!RegExp("\\w\\.(" + (h || "mp3|wav|mid") + ")$", "i").test(escape(v))) return o.msg("选择的音频中包含不支持的格式"), r.value = "";
+					if(!RegExp("\\w\\.(" + (h || "mp3|wav|mid") + ")$", "i").test(escape(v))) {
+						return o.msg("选择的音频中包含不支持的格式"), r.value = ""
+					}
 					break;
 				default:
 					if(layui.each(v, function(e, i) {
 							RegExp("\\w\\.(" + (h || "jpg|png|gif|bmp|jpeg$") + ")", "i").test(escape(i)) || (n = !0)
-						}), n) return o.msg("选择的图片中包含不支持的格式"), r.value = ""
+						}), n) {
+						return o.msg("选择的图片中包含不支持的格式"), r.value = ""
+					}
 			}
 			if(o.fileLength = function() {
 					var i = 0,
 						t = e || o.files || o.chooseFiles || r.files;
 					return layui.each(t, function() {
-						i++
+						i += 1
 					}), i
-				}(), l.number && o.fileLength > l.number) return o.msg("同时最多只能上传的数量为：" + l.number);
+				}(), l.number && o.fileLength > l.number) {
+				return o.msg("同时最多只能上传的数量为：" + l.number)
+			}
 			if(l.size > 0 && !(a.ie && a.ie < 10)) {
 				var F;
 				if(layui.each(o.chooseFiles, function(e, i) {
@@ -199,7 +213,9 @@ layui.define("layer", function(e) {
 							var t = l.size / 1024;
 							t = t >= 1 ? Math.floor(t) + (t % 1 > 0 ? t.toFixed(1) : 0) + "MB" : l.size + "KB", r.value = "", F = t
 						}
-					}), F) return o.msg("文件不能超过" + F)
+					}), F) {
+					return o.msg("文件不能超过" + F)
+				}
 			}
 			y()
 		}
@@ -220,10 +236,12 @@ layui.define("layer", function(e) {
 		t.elem.off("upload.start").on("upload.start", function() {
 			var a = i(this),
 				o = a.attr("lay-data");
-			if(o) try {
-				o = new Function("return " + o)(), e.config = i.extend({}, t, o)
-			} catch(l) {
-				n.error("Upload element property lay-data configuration item has a syntax error: " + o)
+			if(o) {
+				try {
+					o = new Function("return " + o)(), e.config = i.extend({}, t, o)
+				} catch(l) {
+					n.error("Upload element property lay-data configuration item has a syntax error: " + o)
+				}
 			}
 			e.config.item = a, e.elemFile[0].click()
 		}), a.ie && a.ie < 10 || t.elem.off("upload.over").on("upload.over", function() {
