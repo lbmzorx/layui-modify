@@ -13,9 +13,9 @@ update laydate
     为选择的文件
     
     upload.render({
-    selectedfile:function(files){
-         console.log(files);   //文件对象
-     },
+       selectedfile:function(files){
+            console.log(files);   //文件对象
+        },
      });
     
     
@@ -24,12 +24,11 @@ update laydate
   参数为等待上传的表单对象，需要返回该对象，否则不做处理。
 
     upload.render({
-    datadeal:function(data){
-      console.log(data);    //form对象
-      return data;
-    },
-   
-  });
+      datadeal:function(data){
+        console.log(data);    //form对象
+        return data;
+      },
+    });
 
   同时更改了表单的顺序，原来的顺序是先带上传文件，然后是自己配置的额外参数data，现在交换
   了一下顺序，以便适应对象存储的需要（阿里云对象存储必须要换顺序）
